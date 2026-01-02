@@ -231,11 +231,11 @@ const App: React.FC = () => {
             handleAssume={handleAssume}
             itemForDetails={itemForDetails}
             setItemForDetails={setItemForDetails}
+            useEffect(() => { console.log("Item selecionado para gerenciar:", itemForDetails);}, [itemForDetails]);
             
           />
-          console.log("Item selecionado para gerenciar:", itemForDetails);}, [itemForDetails]);
         );
-        useEffect(() => {
+        
   
       case 'SCHEDULING':
         return <SchedulingView {...sharedProps} visitReasons={visitReasons} technicians={technicians} onSchedule={handleSchedule} />;
