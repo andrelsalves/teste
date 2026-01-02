@@ -43,6 +43,20 @@ export const appointmentService = {
         })) as Appointment[];
     },
 
+    async assumeAppointment(appointmentId: string, technicianId: string) {
+        const { data, error } = await supabase
+            .from('appointments')
+            .update({ 
+                technician_id: technicianId, 
+                status: AppointmentStatus.ACCEPTED 
+            })
+            .eq('id', appointmentId)
+            .select();
+        
+        if (error) throw error;
+        return data;
+    },
+
     // Buscar agendamentos específicos para o Técnico
     async getAppointmentsForTechnician(techId: string): Promise<Appointment[]> {
         const { data, error } = await supabase
