@@ -1,4 +1,4 @@
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Appointment } from '../types/types';
 
@@ -80,3 +80,4 @@ export const reportService = {
     doc.save(`Relatorio_${app.companyName.replace(/\s/g, '_')}_${app.date}.pdf`);
   }
 };
+
