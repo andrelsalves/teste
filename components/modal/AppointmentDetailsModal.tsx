@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Appointment, User, UserRole, AppointmentStatus } from '../types/types';
+import { Appointment, User, UserRole, AppointmentStatus } from '../../types/types';
 import { Icons } from '../constants/icons';
 
 interface AppointmentDetailsModalProps {
