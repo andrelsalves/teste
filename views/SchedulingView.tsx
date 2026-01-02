@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Appointment } from '../types/types';
-import { Icons as LucideIcons } from '@/components/constants/icons';
+import { Icons as LucideIcons } from '../components/constants/icons'
 
 // Componente CalendarGrid corrigido (removido erro de variável inexistente)
 const CalendarGrid: React.FC<{
