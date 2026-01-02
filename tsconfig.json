@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "types": ["react", "react-dom"]
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": true, // Verifique se há vírgula aqui
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -19,13 +17,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "types": ["react", "react-dom"] // Verifique as vírgulas acima desta linha também
   },
-  "include": [
-    "src", 
-    "src/**/*", 
-    "*.ts", 
-    "*.tsx"
-  ],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
