@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserRole } from '../types/types';
-import { Icons } from '../constants/icons';
+import { Icons } from '../components/constants/icons';
 import { supabase } from '../services/supabaseClient';
 
 const LoginView: React.FC = () => {
