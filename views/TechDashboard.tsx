@@ -19,7 +19,7 @@ interface TechDashboardProps {
     };
     loadAppointments: () => Promise<void>;
     report: string;
-    setReport: (value: string) => void;
+    setReport: (value: string) => void;??
     handlePhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     photoPreview: string | null;
     sigCanvas: React.MutableRefObject<SignatureCanvas | null>;
@@ -40,6 +40,15 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
     setHasSignature, handleComplete, isFinishing, hasSignature,
     handleAssume, itemForDetails, setItemForDetails
 }) => {
+
+    const onAssumeClick = async (id: string) => {
+        try {
+            await handleAssume(id);
+            await loadAppointments();
+        } catch (error) {
+            console.error("Erro ao assumir:", error);
+        }
+    }
 
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
 
@@ -103,15 +112,24 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                             </div>
                             <h3 className="text-white font-black text-xl mb-1 uppercase tracking-tight">{app.companyName || 'Empresa Independente'}</h3>
                             <p className="text-slate-400 text-sm line-clamp-2 italic mb-6">"{app.reason}"</p>
+                            {!app.technicianId ? (
+                            <button
+                                onClick={() => onAssumeClick(app.id)}
+                                className="w-full py-4 rounded-2xl bg-emerald-500 text-slate-950 font-black text-[10px] uppercase transition-all shadow-lg shadow-emerald-500/20 hover:scale-[1.02]"
+                                >
+                                Assumir este Serviço
+                            </button>
+                        ) : (
                             <button
                                 onClick={() => setItemForDetails(app)}
-                                className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500 hover:text-slate-950 text-white font-black text-[10px] uppercase transition-all shadow-lg hover:shadow-emerald-500/10"
-                            >
+                                className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500 hover:text-slate-950 text-white font-black text-[10px] uppercase transition-all"
+                                >
                                 Gerenciar Visita
                             </button>
+                        )}
                         </div>
                     ))
-                )}
+        )}
             </div>
 
             {/* Modal de Detalhes Dinâmico */}
