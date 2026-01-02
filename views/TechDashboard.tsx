@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Icons } from '@/components/constants/icons';
+import { Icons } from "@/components/constants/icons";
 import { AppointmentStatus } from '../types/types';
 import SignatureCanvas from 'react-signature-canvas';
 import NewAppointmentModal from '../components/modal/NewAppointmentModal';
