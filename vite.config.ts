@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv, ConfigEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 export default defineConfig(({ mode }: ConfigEnv) => {
   // Carrega as variáveis de ambiente (.env) baseado no modo (dev/prod)
