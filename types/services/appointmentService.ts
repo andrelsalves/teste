@@ -29,7 +29,7 @@ export const appointmentService = {
 
         if (error) throw error;
 
-        return (data || []).map(row => ({
+        return (data || []).map((row: { appointment_id: any; company_id: any; company_name: any; company_cnpj: any; technician_id: any; technician_name: any; datetime: string | number | Date; }) => ({
             ...row,
             id: row.appointment_id,
             companyId: row.company_id, // CRITICO: Garante o vínculo da empresa
@@ -43,6 +43,20 @@ export const appointmentService = {
         })) as Appointment[];
     },
 
+    async assumeAppointment(appointmentId: string, technicianId: string) {
+        const { data, error } = await supabase
+            .from('appointments')
+            .update({ 
+                technician_id: technicianId, 
+                status: AppointmentStatus.ACCEPTED 
+            })
+            .eq('id', appointmentId)
+            .select();
+        
+        if (error) throw error;
+        return data;
+    },
+
     // Buscar agendamentos específicos para o Técnico
     async getAppointmentsForTechnician(techId: string): Promise<Appointment[]> {
         const { data, error } = await supabase
@@ -53,7 +67,7 @@ export const appointmentService = {
 
         if (error) throw error;
 
-        return (data || []).map(row => ({
+        return (data || []).map((row: { appointment_id: any; company_id: any; company_name: any; company_cnpj: any; technician_id: any; technician_name: any; datetime: string | number | Date; }) => ({
             ...row,
             id: row.appointment_id,
             companyId: row.company_id,

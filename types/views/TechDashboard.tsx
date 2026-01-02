@@ -4,14 +4,14 @@ import { AppointmentStatus } from '../types/types';
 import SignatureCanvas from 'react-signature-canvas';
 import NewAppointmentModal from '../components/modal/NewAppointmentModal';
 
-// 1. Defina o contrato do que o Dashboard recebe
+// 1. Corrigido o nome da interface para bater com o uso abaixo
 interface TechDashboardProps {
     user: {
         id: string;
         name: string;
         email?: string;
     };
-    appointments: any[]; // Se tiver o tipo Appointment, use Appointment[]
+    appointments: any[]; 
     stats: {
         completed: number;
         pending: number;
@@ -33,7 +33,7 @@ interface TechDashboardProps {
     setItemForDetails: (item: any | null) => void;
 }
 
-// 2. Aplique a interface no componente
+// 2. Aplicada a interface correta
 const TechDashboard: React.FC<TechDashboardProps> = ({
     user, appointments, stats, loadAppointments, report, setReport,
     handlePhotoChange, photoPreview, sigCanvas, clearSignature,
@@ -42,6 +42,15 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
 }) => {
 
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+
+    const onAssumeClick = async (id: string) => {
+        try {
+            await handleAssume(id);
+            await loadAppointments();
+        } catch (error) {
+            console.error("Erro ao assumir:", error);
+        }
+    };
 
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -66,7 +75,7 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                 </div>
                 <div className="flex items-center gap-3 bg-slate-900/50 px-4 py-2 rounded-2xl border border-white/5">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-tighter tracking-widest">Conectado ao Sistema</span>
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Conectado ao Sistema</span>
                 </div>
             </header>
 
@@ -83,7 +92,7 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                         <span className="text-3xl font-black text-white">{stats.completed}</span>
                     </div>
                 </div>
-                {/* Outros stats seguem o mesmo padrão... */}
+                {/* Outros stats aqui... */}
             </div>
 
             {/* Lista de Appointments */}
@@ -103,12 +112,22 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                             </div>
                             <h3 className="text-white font-black text-xl mb-1 uppercase tracking-tight">{app.companyName || 'Empresa Independente'}</h3>
                             <p className="text-slate-400 text-sm line-clamp-2 italic mb-6">"{app.reason}"</p>
-                            <button
-                                onClick={() => setItemForDetails(app)}
-                                className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500 hover:text-slate-950 text-white font-black text-[10px] uppercase transition-all shadow-lg hover:shadow-emerald-500/10"
-                            >
-                                Gerenciar Visita
-                            </button>
+                            
+                            {!app.technicianId ? (
+                                <button
+                                    onClick={() => onAssumeClick(app.id)}
+                                    className="w-full py-4 rounded-2xl bg-emerald-500 text-slate-950 font-black text-[10px] uppercase transition-all shadow-lg shadow-emerald-500/20 hover:scale-[1.02]"
+                                >
+                                    Assumir este Serviço
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setItemForDetails(app)}
+                                    className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500 hover:text-slate-950 text-white font-black text-[10px] uppercase transition-all"
+                                >
+                                    Gerenciar Visita
+                                </button>
+                            )}
                         </div>
                     ))
                 )}
@@ -117,14 +136,55 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
             {/* Modal de Detalhes Dinâmico */}
             {itemForDetails && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md">
-                    <div className="bg-[#1e293b] w-full max-w-md rounded-[40px] border border-white/10 p-8 shadow-2xl animate-slideUp">
-                        <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-tighter">{itemForDetails.companyName}</h3>
+                    <div className="bg-[#1e293b] w-full max-w-md rounded-[40px] border border-white/10 p-8 shadow-2xl animate-slideUp max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">
+                            {itemForDetails.companyName}
+                        </h3>
+                        <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-6">Finalização de Chamado</p>
 
-                        {/* Renderização condicional de ações aqui (Aceitar ou Finalizar) */}
-                        {/* ... (Seu conteúdo de assinatura e relatório) ... */}
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Relatório do Serviço</label>
+                                <textarea 
+                                    value={report}
+                                    onChange={(e) => setReport(e.target.value)}
+                                    className="w-full bg-slate-900 border-none rounded-2xl p-4 text-white text-sm min-h-[100px] focus:ring-2 focus:ring-emerald-500"
+                                    placeholder="Descreva o que foi realizado..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest text-center block">Assinatura do Cliente</label>
+                                <div className="bg-white rounded-2xl overflow-hidden">
+                                    <SignatureCanvas 
+                                        ref={sigCanvas}
+                                        penColor="black"
+                                        canvasProps={{ className: "w-full h-40" }}
+                                        onEnd={() => setHasSignature(true)}
+                                    />
+                                </div>
+                                <button 
+                                    onClick={clearSignature}
+                                    className="text-[9px] text-slate-500 hover:text-white uppercase font-bold w-full text-right pr-2"
+                                >
+                                    Limpar Assinatura
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={handleComplete}
+                                disabled={isFinishing || !hasSignature || !report}
+                                className="w-full py-5 bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 text-slate-950 rounded-[24px] font-black uppercase text-[12px] transition-all"
+                            >
+                                {isFinishing ? 'Enviando Dados...' : 'Finalizar e Gerar Relatório'}
+                            </button>
+                        </div>
 
                         <button
-                            onClick={() => setItemForDetails(null)}
+                            onClick={() => {
+                                setItemForDetails(null);
+                                clearSignature();
+                            }}
                             className="w-full mt-4 py-4 text-slate-500 text-[10px] font-black uppercase hover:text-white transition-colors"
                         >
                             Voltar ao Painel
@@ -148,7 +208,7 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                     onClose={() => setIsNewModalOpen(false)}
                     onSuccess={() => {
                         loadAppointments();
-                        setIsNewModalOpen(false); // Fecha o modal após o sucesso
+                        setIsNewModalOpen(false);
                     }}
                 />
             )}

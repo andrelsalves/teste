@@ -1,0 +1,51 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: #0f172a;
+  color: white;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+html[data-density='compact'] {
+  --ui-gap: 0.75rem;
+  --ui-padding: 0.75rem;
+  --ui-radius: 1rem;
+  font-size: 14px;
+}
+
+html[data-density='comfortable'] {
+  --ui-gap: 1.5rem;
+  --ui-padding: 1.25rem;
+  --ui-radius: 2rem;
+  font-size: 16px;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%) translateX(-50%); /* Centralizado mobile */
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+/* Ajuste para desktop para não quebrar o translate centralizado */
+@media (min-width: 768px) {
+  @keyframes slideDownDesktop {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .animate-slideDown {
+    animation: slideDownDesktop 0.4s ease-out forwards;
+  }
+}
+
