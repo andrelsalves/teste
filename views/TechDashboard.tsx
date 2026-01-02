@@ -133,45 +133,66 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
             </div>
 
             {/* Modal de Detalhes Dinâmico */}
-            {itemForDetails && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md">
-                    <div className="bg-[#1e293b] w-full max-w-md rounded-[40px] border border-white/10 p-8 shadow-2xl animate-slideUp">
-                        <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-tighter">{itemForDetails.companyName}</h3>
+{itemForDetails && (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md">
+        <div className="bg-[#1e293b] w-full max-w-md rounded-[40px] border border-white/10 p-8 shadow-2xl animate-slideUp max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">
+                {itemForDetails.companyName}
+            </h3>
+            <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-6">Finalização de Chamado</p>
 
-                        {/* Renderização condicional de ações aqui (Aceitar ou Finalizar) */}
-                        {/* ... (Seu conteúdo de assinatura e relatório) ... */}
-
-                        <button
-                            onClick={() => setItemForDetails(null)}
-                            className="w-full mt-4 py-4 text-slate-500 text-[10px] font-black uppercase hover:text-white transition-colors"
-                        >
-                            Voltar ao Painel
-                        </button>
-                    </div>
+            <div className="space-y-6">
+                {/* Relatório Técnico */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Relatório do Serviço</label>
+                    <textarea 
+                        value={report}
+                        onChange={(e) => setReport(e.target.value)}
+                        className="w-full bg-slate-900 border-none rounded-2xl p-4 text-white text-sm min-h-[100px] focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Descreva o que foi realizado..."
+                    />
                 </div>
-            )}
 
-            {/* BOTÃO FLUTUANTE DE NOVA VISITA (+) */}
+                {/* Área de Assinatura */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest text-center block">Assinatura do Cliente</label>
+                    <div className="bg-white rounded-2xl overflow-hidden">
+                        <SignatureCanvas 
+                            ref={sigCanvas}
+                            penColor="black"
+                            canvasProps={{ className: "w-full h-40" }}
+                            onEnd={() => setHasSignature(true)}
+                        />
+                    </div>
+                    <button 
+                        onClick={clearSignature}
+                        className="text-[9px] text-slate-500 hover:text-white uppercase font-bold w-full text-right pr-2"
+                    >
+                        Limpar Assinatura
+                    </button>
+                </div>
+
+                {/* Botão de Finalizar */}
+                <button
+                    onClick={handleComplete}
+                    disabled={isFinishing || !hasSignature || !report}
+                    className="w-full py-5 bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 text-slate-950 rounded-[24px] font-black uppercase text-[12px] transition-all"
+                >
+                    {isFinishing ? 'Enviando Dados...' : 'Finalizar e Gerar Relatório'}
+                </button>
+            </div>
+
             <button
-                onClick={() => setIsNewModalOpen(true)}
-                className="fixed bottom-8 right-8 w-16 h-16 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40 hover:scale-110 active:scale-95 transition-all z-40"
+                onClick={() => {
+                    setItemForDetails(null);
+                    clearSignature();
+                }}
+                className="w-full mt-4 py-4 text-slate-500 text-[10px] font-black uppercase hover:text-white transition-colors"
             >
-                <Icons.Plus className="w-8 h-8" />
+                Voltar ao Painel
             </button>
-
-            {/* MODAL DE AGENDAMENTO */}
-            {isNewModalOpen && (
-                <NewAppointmentModal
-                    technicianId={user.id}
-                    onClose={() => setIsNewModalOpen(false)}
-                    onSuccess={() => {
-                        loadAppointments();
-                        setIsNewModalOpen(false); // Fecha o modal após o sucesso
-                    }}
-                />
-            )}
         </div>
-    );
-};
+    </div>
+)}
 
 export default TechDashboard;
