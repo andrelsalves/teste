@@ -231,10 +231,9 @@ const App: React.FC = () => {
             handleAssume={handleAssume}
             itemForDetails={itemForDetails}
             setItemForDetails={setItemForDetails}
-            useEffect(() => { console.log("Item selecionado para gerenciar:", itemForDetails);}, [itemForDetails]);
-            
           />
         );
+        useEffect(() => { console.log("Item selecionado para gerenciar:", itemForDetails);}, [itemForDetails]);
         
   
       case 'SCHEDULING':
