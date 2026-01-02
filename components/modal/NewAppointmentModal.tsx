@@ -78,13 +78,19 @@ const loadCompanies = async () => {
           {/* Seleção de Empresa */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Unidade / Cliente</label>
-            <select 
-              className="w-full bg-slate-800 border-none rounded-2xl p-4 text-white focus:ring-2 focus:ring-emerald-500 appearance-none"
-              value={formData.companyId}
-              onChange={e => setFormData({...formData, companyId: e.target.value})}
-            >
+            <select className="..." 
+              onChange={(e) => setSelectedCompany(e.target.value)}
+              >
               <option value="">Selecione a Empresa</option>
-              {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {companies.length > 0 ? (
+                companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Nenhuma empresa encontrada</option>
+              )}
             </select>
           </div>
 
@@ -122,5 +128,6 @@ const loadCompanies = async () => {
     </div>
   );
 };
+
 
 export default NewAppointmentModal;
