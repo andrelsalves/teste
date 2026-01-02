@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Appointment, User, UserRole, AppointmentStatus } from '../types/types';
-import { Icons } from '../components/constants/icons';
+import { Icons } from '../constants/icons';
 import AppointmentDetailsModal from '../components/modal/AppointmentDetailsModal';
 import { reportService } from '../services/reportService';
 

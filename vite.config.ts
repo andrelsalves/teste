@@ -1,13 +1,8 @@
 import { defineConfig, loadEnv, ConfigEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export default defineConfig(({ mode }: ConfigEnv) => {
-
+  // Carrega as variáveis de ambiente (.env) baseado no modo (dev/prod)
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
@@ -17,7 +12,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
     },
     plugins: [react()],
     define: {
-      // O Vite usa import.meta.env por padrão
+      // O Vite usa import.meta.env por padrão, mas se precisar de process.env:
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
     resolve: {
@@ -27,8 +22,9 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       dedupe: ['react', 'react-dom']
     },
     build: {
-      outDir: 'dist',
       rollupOptions: {
+        // CUIDADO: Só coloque aqui se você realmente for carregar via CDN. 
+        // Para a maioria dos projetos, remova o external do supabase.
         external: [] 
       }
     }

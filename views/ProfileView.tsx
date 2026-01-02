@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, UserRole } from '../types/types';
-import { Icons } from '../components/constants/icons';
+import { Icons } from '../constants/icons';
 
 interface ProfileViewProps {
   user: User;
