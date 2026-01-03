@@ -86,7 +86,7 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                                 {app.company_name}
                             </h3>
                              {/* Texto motivos de visita */}
-                            <p className="text-slate-200 text-[8px] fonte-white mt-50 italic line-clamp-1">
+                            <p className="text-slate-400 text-[8px] fonte-white mt-50 italic line-clamp-1">
                                 "{app.reason}"
                             </p>
 
