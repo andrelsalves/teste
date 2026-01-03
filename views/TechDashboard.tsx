@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icons } from "../components/constants/icons";
-import * as SignatureCanvas from 'react-signature-canvas';
+import * as SignatureCanvasModule from 'react-signature-canvas';
 import NewAppointmentModal from '../components/modal/NewAppointmentModal';
 import { reportService } from '../services/reportService';
 
@@ -122,21 +122,23 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
 
                         {/* Assinatura */}
                         <div className="bg-white rounded-2xl h-32 overflow-hidden shadow-inner">
-    {/* A verificação typeof ajuda o React a não quebrar se a lib falhar no build */}
-    {typeof SignatureCanvas !== 'undefined' ? (
-        <SignatureCanvas
-            ref={sigCanvas as any}
-            onEnd={() => setHasSignature(true)}
-            penColor="black"
-            canvasProps={{ className: "w-full h-full signature-canvas" }}
-        />
-    ) : (
-        <div className="flex items-center justify-center h-full text-slate-900 text-xs font-bold">
-            Erro ao carregar módulo de assinatura
-        </div>
-    )}
-</div>
-
+                            {/* Verificamos se SignatureCanvas é uma função ou classe (componente válido) */}
+                            {typeof SignatureCanvas === 'function' || typeof SignatureCanvas === 'object' ? (
+                    <SignatureCanvas ref={sigCanvas as any} onEnd={() => setHasSignature(true)} penColor="black" canvasProps={{ 
+                        className: "w-full h-full signature-canvas",
+                        style: { width: '100%', height: '100%' } 
+                    }}
+                        />
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-slate-900 p-4">
+                        <span className="text-[10px] font-black uppercase text-rose-600">Erro de Módulo</span>
+                        <span className="text-[8px] text-slate-500">Recarregue a página (Ctrl+F5)</span>
+                    </div>
+                )}
+                        </div>
+                        
+                            
+    
                         {/* Botões */}
                         <button
                             onClick={onFinishHandle}
