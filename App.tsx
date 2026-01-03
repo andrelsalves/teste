@@ -44,11 +44,17 @@ const App: React.FC = () => {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setPhotoPreview(reader.result as string);
-      reader.readAsDataURL(file);
+        // 1. Cria o preview para o modal
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPhotoPreview(reader.result as string); // Isso será usado no PDF
+        };
+        reader.readAsDataURL(file);
+
+        // 2. Aqui você guardaria o arquivo original para o upload no Supabase
+        // setPhotoFile(file); 
     }
-  };
+};
 
   const getStatusStyle = (status: string) => {
     switch (status) {
