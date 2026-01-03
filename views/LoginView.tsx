@@ -26,84 +26,93 @@ export default function LoginView() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0f172a] flex flex-col items-center justify-start pt-20 p-6">
+    <div className="min-h-screen w-full bg-[#0b0f1a] flex flex-col items-center justify-center p-6 font-sans">
       
-      {/* Logo e Título */}
-      <div className="flex flex-col items-center mb-12 text-center animate-fadeIn">
-        <div className="bg-[#1e293b] p-5 rounded-[24px] mb-6 border border-slate-700 shadow-xl">
-          <Icons.Shield className="w-10 h-10 text-emerald-400" />
+      {/* Área da Logo */}
+      <div className="flex flex-col items-center mb-10 animate-fadeIn">
+        <div className="bg-[#161b2c] p-4 rounded-2xl border border-white/5 mb-4 shadow-2xl">
+          <Icons.Shield className="w-8 h-8 text-[#10b981]" />
         </div>
-        <h1 className="text-5xl font-black text-white mb-2 italic tracking-tighter">
-          SST <span className="text-emerald-500">PRO</span>
+        <h1 className="text-4xl font-black text-white italic tracking-tighter">
+          SST <span className="text-[#10b981]">PRO</span>
         </h1>
-        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em]">
+        <p className="text-slate-500 text-[9px] font-bold uppercase tracking-[0.4em] mt-2">
           Gestão Ocupacional
         </p>
       </div>
 
-      <div className="w-full max-w-[400px] bg-[#1e293b]/40 backdrop-blur-md border border-white/5 rounded-[32px] p-10 shadow-2xl animate-slideUp">
+      {/* Card de Login - Estilo da Foto */}
+      <div className="w-full max-w-[420px] bg-[#111625] border border-white/5 rounded-[40px] p-10 shadow-2xl relative">
+        {/* Glow effect sutil interno */}
+        <div className="absolute inset-0 rounded-[40px] bg-emerald-500/5 blur-3xl -z-10" />
         
-        {/* Seletor Visual (Apenas Estético) */}
-        <div className="flex p-1 bg-[#0b1120] rounded-[18px] mb-10 border border-slate-800">
-          <button 
-            type="button"
-            onClick={() => setActiveRole(UserRole.EMPRESA)} 
-            className={`flex-1 py-3 text-[10px] font-black rounded-[14px] transition-all ${activeRole === UserRole.EMPRESA ? 'bg-emerald-500 text-slate-900 shadow-lg' : 'text-slate-500'}`}
-          >
-            EMPRESA
-          </button>
-          <button 
-            type="button"
-            onClick={() => setActiveRole(UserRole.TECNICO)} 
-            className={`flex-1 py-3 text-[10px] font-black rounded-[14px] transition-all ${activeRole === UserRole.TECNICO ? 'bg-emerald-500 text-slate-900 shadow-lg' : 'text-slate-500'}`}
-          >
-            TÉCNICO
-          </button>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">E-mail</label>
-            <input
-              type="email"
-              required
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0b1120] border border-slate-800 rounded-xl py-4 px-5 text-white placeholder:text-slate-700 focus:outline-none focus:border-emerald-500/50 transition-all"
-            />
+        <form onSubmit={handleLogin} className="relative z-10">
+          
+          {/* Seletor Estilo Pílula */}
+          <div className="flex p-1.5 bg-[#080c16] rounded-2xl mb-10 border border-white/5">
+            <button 
+              type="button"
+              onClick={() => setActiveRole(UserRole.EMPRESA)} 
+              className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all duration-300 ${
+                activeRole === UserRole.EMPRESA 
+                ? 'bg-[#10b981] text-[#080c16] shadow-[0_0_20px_rgba(16,185,129,0.3)]' 
+                : 'text-slate-500 hover:text-slate-400'
+              }`}
+            >
+              EMPRESA
+            </button>
+            <button 
+              type="button"
+              onClick={() => setActiveRole(UserRole.TECNICO)} 
+              className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all duration-300 ${
+                activeRole === UserRole.TECNICO 
+                ? 'bg-[#10b981] text-[#080c16] shadow-[0_0_20px_rgba(16,185,129,0.3)]' 
+                : 'text-slate-500 hover:text-slate-400'
+              }`}
+            >
+              TÉCNICO
+            </button>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Senha</label>
-            <input
-              type="password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0b1120] border border-slate-800 rounded-xl py-4 px-5 text-white placeholder:text-slate-700 focus:outline-none focus:border-emerald-500/50 transition-all"
-            />
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">E-mail</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-[#080c16] border border-white/5 rounded-2xl py-4 px-6 text-white placeholder:text-slate-800 focus:outline-none focus:border-emerald-500/30 transition-all text-sm"
+                placeholder="seu@email.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Senha</label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#080c16] border border-white/5 rounded-2xl py-4 px-6 text-white placeholder:text-slate-800 focus:outline-none focus:border-emerald-500/30 transition-all text-sm"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {errorMsg && (
+              <p className="text-rose-500 text-[10px] font-bold uppercase text-center animate-shake">
+                {errorMsg}
+              </p>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-[#10b981] hover:bg-[#0da371] disabled:bg-slate-800 disabled:text-slate-600 text-[#080c16] font-black py-5 rounded-2xl shadow-[0_10px_30px_rgba(16,185,129,0.2)] uppercase text-[11px] tracking-[0.2em] transition-all hover:scale-[1.01] active:scale-[0.98] mt-4"
+            >
+              {loading ? 'Entrando...' : 'Entrar na Plataforma'}
+            </button>
           </div>
-
-          {errorMsg && (
-            <p className="text-red-400 text-[10px] font-bold uppercase text-center bg-red-500/10 py-2 rounded-lg border border-red-500/20">
-              {errorMsg}
-            </p>
-          )}
-
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-slate-900 font-black py-5 rounded-[20px] shadow-lg shadow-emerald-500/20 uppercase text-[11px] tracking-widest transition-all active:scale-[0.98]"
-          >
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-slate-900/20 border-t-slate-900 rounded-full animate-spin" />
-                Carregando...
-              </div>
-            ) : 'Entrar na Plataforma'}
-          </button>
         </form>
       </div>
     </div>
