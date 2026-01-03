@@ -92,3 +92,5 @@
         </div>
     )
 }
+export default TechDashboard;
+
