@@ -1,19 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css';
+import { AuthProvider } from './contexts/AuthContext';
 import { UIDensityProvider } from './contexts/UIDensityContext';
 
-const rootElement = document.getElementById('root');
-
-if (!rootElement) {
-  throw new Error('Could not find root element');
-}
-
-ReactDOM.createRoot(rootElement).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <UIDensityProvider>
-      <App />
-    </UIDensityProvider>
+    <AuthProvider>
+      <UIDensityProvider>
+        <App />
+      </UIDensityProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
