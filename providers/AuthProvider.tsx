@@ -28,16 +28,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  useEffect(() => {
-    // Escuta mudanças na autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event: AuthChangeEvent, session: Session | null) => {
-        if (!session?.user) {
-          setUser(null);
-          setLoading(false);
-          return;
-        }
+  uuseEffect(() => {
+  // 1. Função para verificar a sessão atual imediatamente ao carregar
+  const checkInitialSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setLoading(false);
+      return;
+    }
+    // Se houver sessão, o onAuthStateChange abaixo cuidará de buscar o perfil
+  };
 
+  checkInitialSession();
+
+  // 2. Ouvinte de mudanças
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    async (_event, session) => {
+      if (!session) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -55,14 +68,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             registrationNumber: profile.registration_number
           });
         }
-        setLoading(false);
+      } catch (error) {
+        console.error("Erro ao carregar perfil:", error);
+      } finally {
+        setLoading(false); // Garante que o loading pare mesmo com erro
       }
-    );
+    }
+  );
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  return () => subscription.unsubscribe();
+}, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
