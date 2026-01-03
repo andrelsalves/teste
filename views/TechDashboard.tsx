@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Adicionado useEffect aqui
 import { Icons } from "../components/constants/icons";
 import NewAppointmentModal from '../components/modal/NewAppointmentModal';
 import { reportService } from '../services/reportService';
-
-// Fallback seguro para o SignatureCanvas em produção
-const SignatureCanvas = (SignatureCanvasComponent as any).default || SignatureCanvasComponent;
 
 interface TechDashboardProps {
   user: { id: string; name: string; email?: string; };
@@ -34,6 +31,14 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
 }) => {
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [SigComponent, setSigComponent] = useState<any>(null);
+
+  // Carregamento dinâmico para evitar Erro #130 no Render
+  useEffect(() => {
+    import('react-signature-canvas').then((module) => {
+      setSigComponent(() => module.default || module);
+    }).catch(err => console.error("Erro ao carregar SignatureCanvas:", err));
+  }, []);
 
   const onFinishHandle = async () => {
     if (!itemForDetails || !sigCanvas.current) return;
@@ -50,15 +55,6 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
       console.error("Erro ao finalizar:", error);
     }
   };
-
-  const [SigComponent, setSigComponent] = useState<any>(null);
-
-useEffect(() => {
-  // Carrega a biblioteca apenas quando o componente monta no navegador
-  import('react-signature-canvas').then((module) => {
-    setSigComponent(() => module.default || module);
-  });
-}, []);
 
   return (
     <div className="space-y-8 animate-fadeIn pb-20 relative">
@@ -95,7 +91,7 @@ useEffect(() => {
           appointments.map((app) => (
             <div key={app.id} className="bg-slate-900/40 border border-white/5 rounded-2xl p-4">
               <h3 className="text-white font-bold text-sm truncate">{app.company_name}</h3>
-              <button 
+              <button
                 onClick={() => setItemForDetails(app)}
                 className="w-full mt-4 py-2 bg-slate-800 text-slate-400 text-[10px] font-bold uppercase rounded-xl hover:bg-emerald-500 hover:text-slate-950 transition-all"
               >
@@ -111,7 +107,7 @@ useEffect(() => {
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-slate-950/95 backdrop-blur-md">
           <div className="bg-[#1e293b] w-full max-w-md rounded-[32px] border border-white/10 p-8 shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-black text-white mb-6 uppercase">{itemForDetails.company_name}</h3>
-            
+
             <textarea
               value={report}
               onChange={(e) => setReport(e.target.value)}
@@ -132,20 +128,25 @@ useEffect(() => {
                 )}
               </div>
 
-              {/* Assinatura */}
-              <div className="bg-white rounded-2xl h-32 overflow-hidden shadow-inner">
-                {SignatureCanvas ? (
-                  <SignatureCanvas
+              {/* Assinatura Corrigida */}
+              <div className="bg-white rounded-2xl h-32 overflow-hidden shadow-inner relative">
+                {SigComponent ? (
+                  <SigComponent
                     ref={sigCanvas}
                     onEnd={() => setHasSignature(true)}
                     penColor="black"
-                    canvasProps={{ className: "w-full h-full" }}
+                    canvasProps={{
+                      className: "w-full h-full",
+                      style: { display: 'block', width: '100%', height: '100%' }
+                    }}
                   />
                 ) : (
-                  <p className="text-black p-4 text-xs">Carregando Assinatura...</p>
+                  <div className="flex items-center justify-center h-full text-slate-400 text-[10px] uppercase font-bold">
+                    Iniciando módulo de assinatura...
+                  </div>
                 )}
               </div>
-              <button onClick={clearSignature} className="text-[8px] text-rose-500 font-black uppercase">Limpar Assinatura</button>
+              <button onClick={clearSignature} className="text-[8px] text-rose-500 font-black uppercase text-left">Limpar Assinatura</button>
             </div>
 
             <div className="mt-6 space-y-3">
@@ -180,7 +181,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Floating Action Button */}
       <button
         onClick={() => setIsNewModalOpen(true)}
         className="fixed bottom-8 right-8 w-14 h-14 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center shadow-2xl z-40"
