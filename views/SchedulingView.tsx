@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
 import { Appointment } from '../types/types';
-import { Icons as LucideIcons } from '../components/constants/icons'
+import { Icons as LucideIcons } from '../components/constants/icons';
 
-// Componente CalendarGrid corrigido (removido erro de variável inexistente)
+// --- FUNÇÃO EXPORTADA (AGORA FORA DO COMPONENTE) ---
+export const generateTimeSlots = () => {
+    const slots = [];
+    let currentMinutes = 480; // 08:00
+    const endMinutes = 1080;  // 18:00
+
+    while (currentMinutes <= endMinutes) {
+        const hours = Math.floor(currentMinutes / 60);
+        const mins = currentMinutes % 60;
+        slots.push(
+            `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+        );
+        currentMinutes += 40; // Intervalo de 40 minutos solicitado
+    }
+    return slots;
+};
+
 const CalendarGrid: React.FC<{
     selectedDate: string;
     onSelect: (date: string) => void;
@@ -58,10 +74,9 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
         if (!date || !time || !reason) return;
         setIsSubmitting(true);
         try {
-            const datetime = new Date(`${date}T${time}`).toISOString();
+            const datetime = `${date}T${time}:00`;
             await onSchedule({ datetime, reason, description: '', technicianId: undefined });
 
-            // Limpa o formulário após sucesso
             setTime('');
             setReason('');
         } catch (error) {
@@ -69,22 +84,6 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    export const generateTimeSlots = () => {
-        const slots = [];
-        let currentMinutes = 480; // 08:00
-        const endMinutes = 1080;  // 18:00
-
-        while (currentMinutes <= endMinutes) {
-            const hours = Math.floor(currentMinutes / 60);
-            const mins = currentMinutes % 60;
-            slots.push(
-                `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
-            );
-            currentMinutes += 40; // Intervalo solicitado
-        }
-        return slots;
     };
 
     return (
@@ -127,10 +126,13 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
                                 className="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-emerald-500/50 transition-colors"
                             >
                                 <option value="">Selecione o horário...</option>
-                                {generateTimeSlots().map(s => <option key={s} value={s}>{s}</option>)}
+                                {generateTimeSlots().map(s => (
+                                    <option key={s} value={s} className="bg-slate-900">{s}</option>
+                                ))}
                             </select>
                         </div>
 
+                        {/* Resto do formulário mantido igual */}
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-500 uppercase">Serviço Especializado</label>
                             <select
