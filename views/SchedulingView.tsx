@@ -60,7 +60,7 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
         try {
             const datetime = new Date(`${date}T${time}`).toISOString();
             await onSchedule({ datetime, reason, description: '', technicianId: undefined });
-            
+
             // Limpa o formulário após sucesso
             setTime('');
             setReason('');
@@ -73,13 +73,16 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
 
     export const generateTimeSlots = () => {
         const slots = [];
-        let current = new Date();
-        current.setHours(8, 0, 0);
-        const end = new Date();
-        end.setHours(18, 0, 0);
-        while (current <= end) {
-            slots.push(current.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
-            current.setMinutes(current.getMinutes() + 40);
+        let currentMinutes = 480; // 08:00
+        const endMinutes = 1080;  // 18:00
+
+        while (currentMinutes <= endMinutes) {
+            const hours = Math.floor(currentMinutes / 60);
+            const mins = currentMinutes % 60;
+            slots.push(
+                `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+            );
+            currentMinutes += 40; // Intervalo solicitado
         }
         return slots;
     };
@@ -148,8 +151,8 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
                             </select>
                         </div>
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={isSubmitting || !date || !time || !reason}
                             className={`w-full font-black py-5 rounded-2xl uppercase transition-all
                                 ${isSubmitting ? 'bg-slate-700 text-slate-400 cursor-not-allowed' : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 active:scale-95'}`}
