@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  uuseEffect(() => {
+  useEffect(() => {
   // 1. Função para verificar a sessão atual imediatamente ao carregar
   const checkInitialSession = async () => {
     const { data: { session } } = await supabase.auth.getSession();
