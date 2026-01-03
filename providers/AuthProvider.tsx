@@ -1,10 +1,9 @@
-// src/providers/AuthProvider.tsx
+// src/providers/AuthProvider.tsx (ou o caminho que você preferir, mas seja consistente)
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { login as loginService } from '../services/authService';
 import { User } from '../types/types';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
-
 
 interface AuthContextData {
   user: User | null;
@@ -30,40 +29,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-  const { data } = supabase.auth.onAuthStateChange(
-    async (_event: AuthChangeEvent, session: Session | null) => {
-      if (!session?.user) {
-        setUser(null);
+    // Escuta mudanças na autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event: AuthChangeEvent, session: Session | null) => {
+        if (!session?.user) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          setUser({
+            id: profile.id,
+            email: session.user.email!,
+            name: profile.name,
+            role: profile.role,
+            companyId: profile.company_id,
+            companyName: profile.company_name,
+            registrationNumber: profile.registration_number
+          });
+        }
         setLoading(false);
-        return;
       }
+    );
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (profile) {
-        setUser({
-          id: profile.id,
-          email: session.user.email!,
-          name: profile.name,
-          role: profile.role,
-          companyId: profile.company_id,
-          companyName: profile.company_name,
-          registrationNumber: profile.registration_number
-        });
-      }
-
-      setLoading(false);
-    }
-  );
-
-  return () => {
-    data.subscription.unsubscribe();
-  };
-}, []);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
