@@ -121,20 +121,21 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                         </div>
 
                         {/* Assinatura */}
-                        <div className="space-y-2 mb-6">
-                            <div className="flex justify-between items-center text-[10px] text-slate-400 font-black uppercase">
-                                <span>Assinatura do Cliente</span>
-                                <button onClick={clearSignature} className="text-rose-500">Limpar</button>
-                            </div>
-                            <div className="bg-white rounded-2xl h-32 overflow-hidden">
-                                <SignatureCanvas
-                                    ref={sigCanvas as any}
-                                    onEnd={() => setHasSignature(true)}
-                                    penColor="black"
-                                    canvasProps={{ className: "w-full h-full" }}
-                                />
-                            </div>
-                        </div>
+                        <div className="bg-white rounded-2xl h-32 overflow-hidden shadow-inner">
+    {/* A verificação typeof ajuda o React a não quebrar se a lib falhar no build */}
+    {typeof SignatureCanvas !== 'undefined' ? (
+        <SignatureCanvas
+            ref={sigCanvas as any}
+            onEnd={() => setHasSignature(true)}
+            penColor="black"
+            canvasProps={{ className: "w-full h-full signature-canvas" }}
+        />
+    ) : (
+        <div className="flex items-center justify-center h-full text-slate-900 text-xs font-bold">
+            Erro ao carregar módulo de assinatura
+        </div>
+    )}
+</div>
 
                         {/* Botões */}
                         <button
