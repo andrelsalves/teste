@@ -71,7 +71,7 @@ const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
         }
     };
 
-    const generateTimeSlots = () => {
+    export const generateTimeSlots = () => {
         const slots = [];
         let current = new Date();
         current.setHours(8, 0, 0);
