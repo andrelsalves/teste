@@ -130,6 +130,7 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
               </div>
 
               <div className="bg-white rounded-2xl h-32 overflow-hidden shadow-inner relative">
+                {/* A verificação 'typeof === function' impede o erro #130 */}
                 {typeof SigComponent === 'function' ? (
                   <SigComponent
                     ref={sigCanvas}
@@ -150,9 +151,8 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
               <button
                 onClick={onFinishHandle}
                 disabled={isFinishing || !hasSignature || !report}
-                className={`w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${
-                  isFinishing || !hasSignature || !report ? 'bg-slate-800 text-slate-600' : 'bg-emerald-500 text-slate-950'
-                }`}
+                className={`w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${isFinishing || !hasSignature || !report ? 'bg-slate-800 text-slate-600' : 'bg-emerald-500 text-slate-950'
+                  }`}
               >
                 {isFinishing ? 'Sincronizando...' : 'Finalizar Atendimento'}
               </button>
