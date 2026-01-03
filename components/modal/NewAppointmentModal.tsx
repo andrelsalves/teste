@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-// Importa do Barrel da pasta de cima
 import { Icons } from '../constants/icons';
-// Importa dos Services (subindo duas pastas)
 import { appointmentService } from '../../services/appointmentService';
 import { companyService } from '../../services/companyService';
-import { AppointmentStatus, Company } from '../../types/types';
+import { AppointmentStatus } from '../../types/types';
 import { generateTimeSlots } from '../../views/SchedulingView';
 
 interface NewAppointmentModalProps {
@@ -16,43 +14,52 @@ interface NewAppointmentModalProps {
 const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSuccess, technicianId }) => {
     const [companies, setCompanies] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    const timeOptions = generateTimeSlots();
-    const timeOptions = generateTimeSlots()
+    
+    // 1. Defina o estado primeiro
     const [formData, setFormData] = useState({
         companyId: '',
         reason: '',
-        datetime: '',
+        date: '', // Separado para o input type="date"
+        time: '', // Separado para o select de 40min
     });
+
+    // 2. Gere as opções de horário
+    const timeOptions = generateTimeSlots();
 
     useEffect(() => {
         loadCompanies();
     }, []);
 
-
     const loadCompanies = async () => {
         try {
-            const data = await companyService.getAllCompanies(); //
-            // Verificação de segurança para garantir que data seja sempre um array
+            const data = await companyService.getAllCompanies();
             setCompanies(data || []);
         } catch (err) {
             console.error("Erro ao carregar empresas");
-            alert("Não foi possível carregar a lista de clientes.");
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.companyId || !formData.reason || !formData.datetime) {
+        
+        // Validação correta
+        if (!formData.companyId || !formData.reason || !formData.date || !formData.time) {
             return alert("Preencha todos os campos");
         }
 
         setLoading(true);
         try {
+            // Monta a string completa de data/hora para o banco de dados
+            const fullDateTime = `${formData.date}T${formData.time}:00`;
+
             await appointmentService.createAppointment({
-                ...formData,
+                companyId: formData.companyId,
+                reason: formData.reason,
+                datetime: fullDateTime, // Envia a string combinada
                 technicianId: technicianId,
                 status: AppointmentStatus.ACCEPTED,
             });
+            
             onSuccess();
             onClose();
         } catch (err) {
@@ -61,9 +68,6 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSu
             setLoading(false);
         }
     };
-
-    const [selectedCompanyId, setSelectedCompanyId] = useState("");
-    ;
 
     return (
         <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-end md:items-center justify-center p-4">
@@ -81,17 +85,24 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSu
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Seleção de Empresa */}
+                    {/* Seleção de Empresa - Corrigido para salvar no estado */}
                     <div className="flex flex-col gap-2 mb-4">
-                        <label className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                        <label className="text-gray-400 text-[10px] font-black uppercase ml-2 tracking-widest">
                             Unidade / Cliente
                         </label>
                         <select
-                            className="bg-transparent border border-slate-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none"
-                            style={{ backgroundColor: 'transparent' }} // Garante a remoção do fundo
+                            className="w-full bg-slate-800 border-none rounded-2xl p-4 text-white focus:ring-2 focus:ring-emerald-500 appearance-none"
+                            style={{ backgroundColor: '#1e293b' }}
+                            value={formData.companyId}
+                            onChange={e => setFormData({ ...formData, companyId: e.target.value })}
+                            required
                         >
-                            <option className="bg-slate-900" value="">Selecione a Empresa</option>
-                            {/* ... mapeamento das empresas */}
+                            <option value="">Selecione a Empresa</option>
+                            {companies.map(company => (
+                                <option key={company.id} value={company.id} className="bg-slate-900">
+                                    {company.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -106,39 +117,31 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSu
                         />
                     </div>
 
-                    {/* Data e Hora */}
+                    {/* Data e Hora Separados */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                        {/* CAMPO DE DATA */}
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">
-                                Data da Visita
-                            </label>
+                            <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Data</label>
                             <input
                                 type="date"
                                 className="w-full bg-slate-800 border-none rounded-2xl p-4 text-white focus:ring-2 focus:ring-emerald-500"
-                                value={formData.date || ''}
+                                value={formData.date}
                                 onChange={e => setFormData({ ...formData, date: e.target.value })}
                                 required
                             />
                         </div>
 
-                        {/* CAMPO DE HORÁRIO (SELECT DE 40 MIN) */}
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">
-                                Horário
-                            </label>
+                            <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Horário</label>
                             <select
                                 className="w-full bg-slate-800 border-none rounded-2xl p-4 text-white focus:ring-2 focus:ring-emerald-500 appearance-none"
-                                style={{ backgroundColor: '#1e293b' }} // Cor sólida slate-800 para nitidez
-                                value={formData.time || ''}
+                                style={{ backgroundColor: '#1e293b' }}
+                                value={formData.time}
                                 onChange={e => setFormData({ ...formData, time: e.target.value })}
                                 required
                             >
-                                <option value="" className="bg-slate-900">Selecionar</option>
+                                <option value="" className="bg-slate-900">Horário</option>
                                 {timeOptions.map(t => (
-                                    <option key={t} value={t} className="bg-slate-900">
-                                        {t}
-                                    </option>
+                                    <option key={t} value={t} className="bg-slate-900">{t}</option>
                                 ))}
                             </select>
                         </div>
@@ -157,8 +160,4 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSu
     );
 };
 
-
 export default NewAppointmentModal;
-
-
-
