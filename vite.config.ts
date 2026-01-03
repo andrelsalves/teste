@@ -1,9 +1,9 @@
 import { defineConfig, loadEnv, ConfigEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite'; // Importação oficial do v4
 import path from 'path';
 
 export default defineConfig(({ mode }: ConfigEnv) => {
-  // Carrega as variáveis de ambiente (.env) baseado no modo (dev/prod)
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
@@ -11,22 +11,27 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       port: 3000,
       host: '0.0.0.0',
     },
-    plugins: [react()],
+    plugins: [
+      react(),
+      tailwindcss(), // Plugin oficial, sem a função manual no final
+    ],
+    optimizeDeps: {
+      include: ['react-signature-canvas'],
+    },
     define: {
-      // O Vite usa import.meta.env por padrão, mas se precisar de process.env:
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
-      
       },
       dedupe: ['react', 'react-dom']
     },
     build: {
+      commonjsOptions: {
+        include: [/react-signature-canvas/, /node_modules/],
+      },
       rollupOptions: {
-        // CUIDADO: Só coloque aqui se você realmente for carregar via CDN. 
-        // Para a maioria dos projetos, remova o external do supabase.
         external: [] 
       }
     }

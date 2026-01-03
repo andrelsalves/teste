@@ -129,20 +129,21 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
               </div>
 
               {/* Assinatura Corrigida */}
-              <div className="bg-white rounded-2xl h-32 overflow-hidden shadow-inner relative">
-                {SigComponent ? (
+              {/* No local onde você renderiza o SigComponent */}
+              <div className="bg-white rounded-2xl h-40 overflow-hidden relative">
+                {itemForDetails && SigComponent ? (
                   <SigComponent
                     ref={sigCanvas}
                     onEnd={() => setHasSignature(true)}
                     penColor="black"
                     canvasProps={{
-                      className: "w-full h-full",
-                      style: { display: 'block', width: '100%', height: '100%' }
+                      className: "w-full h-full cursor-crosshair",
+                      style: { width: '100%', height: '100%' }
                     }}
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-slate-400 text-[10px] uppercase font-bold">
-                    Iniciando módulo de assinatura...
+                  <div className="flex items-center justify-center h-full text-slate-400 animate-pulse text-xs uppercase font-bold">
+                    Carregando Assinatura...
                   </div>
                 )}
               </div>
@@ -153,9 +154,8 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
               <button
                 onClick={onFinishHandle}
                 disabled={isFinishing || !hasSignature || !report}
-                className={`w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${
-                  isFinishing || !hasSignature || !report ? 'bg-slate-800 text-slate-600' : 'bg-emerald-500 text-slate-950'
-                }`}
+                className={`w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${isFinishing || !hasSignature || !report ? 'bg-slate-800 text-slate-600' : 'bg-emerald-500 text-slate-950'
+                  }`}
               >
                 {isFinishing ? 'Sincronizando...' : 'Finalizar Atendimento'}
               </button>
