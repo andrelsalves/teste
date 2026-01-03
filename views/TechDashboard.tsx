@@ -114,26 +114,28 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
 </div>
 
 {/* MODAL DE GERENCIAMENTO */ }
-{
-  itemForDetails && (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-slate-950/95 backdrop-blur-md" >
-      <div className="bg-[#1e293b] w-full max-w-md rounded-[32px] border border-white/10 p-8 shadow-2xl flex flex-col max-h-[90vh]" >
-        <h3 className="text-xl font-black text-white mb-6 uppercase tracking-tight" >
-          { itemForDetails.company_name }
-          </h3>
-
-          < div className = "flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar" >
-            {/* Relatório Técnico */ }
-            < div className = "space-y-2" >
-              <label className="text-[10px] text-slate-400 font-black uppercase tracking-widest" > Relatório da Visita </label>
-                < textarea
-  value = { report }
-  onChange = {(e) => setReport(e.target.value)
-}
-placeholder = "Descreva as atividades..."
-className = "w-full bg-slate-900/50 border border-white/5 rounded-2xl p-4 text-white text-sm min-h-[100px] outline-none focus:border-emerald-500/50 transition-all"
-  />
-  </div>
+      {itemForDetails && (
+    <div className="fixed inset-0 z-[9999] ...">
+        {/* Adicione uma verificação extra aqui dentro */}
+        <h3 className="text-xl font-black text-white mb-6 uppercase">
+            {itemForDetails?.company_name || "Detalhes"}
+        </h3>
+        
+        {/* Garanta que o SignatureCanvas só carregue se a lib existir */}
+        <div className="bg-white rounded-2xl h-32 overflow-hidden">
+            {SignatureCanvas ? (
+                <SignatureCanvas
+                    ref={sigCanvas as any}
+                    onEnd={() => setHasSignature(true)}
+                    penColor="black"
+                    canvasProps={{ className: "w-full h-full" }}
+                />
+            ) : (
+                <p className="text-black p-4 text-xs">Carregando Assinatura...</p>
+            )}
+        </div>
+    </div>
+)}
 
 {/* Evidência Fotográfica */ }
 <div className="space-y-2" >
@@ -148,9 +150,9 @@ className = "w-full bg-slate-900/50 border border-white/5 rounded-2xl p-4 text-w
                                             <Icons.Camera className="w-6 h-6 mb-1" />
         <span className="text-[8px] font-bold uppercase tracking-tighter"> Anexar Evidência</ span >
       </div>
-                                    )}
+        )}
+    </div>
 </div>
-  </div>
 
 {/* Assinatura do Cliente */ }
 <div className="space-y-2" >
@@ -160,14 +162,13 @@ className = "w-full bg-slate-900/50 border border-white/5 rounded-2xl p-4 text-w
         </div>
         < div className = "bg-white rounded-2xl h-32 overflow-hidden shadow-inner" >
           <SignatureCanvas
-                                        ref={ sigCanvas as any }
-onEnd = {() => setHasSignature(true)}
-penColor = "black"
-canvasProps = {{ className: "w-full h-full" }}
-                                    />
-  </div>
-  </div>
-  </div>
+            ref={ sigCanvas as any } onEnd = {() => setHasSignature(true)}
+            penColor = "black"
+            canvasProps = {{ className: "w-full h-full" }}
+            />
+        </div>
+</div>
+          </div>
 
 {/* Ações Finais */ }
 <div className="mt-6 space-y-3" >
