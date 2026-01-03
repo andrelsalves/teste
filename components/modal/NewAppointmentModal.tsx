@@ -59,6 +59,8 @@ const loadCompanies = async () => {
     }
   };
 
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
+
   return (
     <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-end md:items-center justify-center p-4">
       <div className="bg-slate-900 border border-white/10 w-full max-w-lg rounded-[40px] p-8 shadow-2xl overflow-hidden relative">
@@ -78,20 +80,21 @@ const loadCompanies = async () => {
           {/* Seleção de Empresa */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Unidade / Cliente</label>
-            <select className="..." 
-              onChange={(e) => setSelectedCompany(e.target.value)}
-              >
-              <option value="">Selecione a Empresa</option>
-              {companies.length > 0 ? (
-                companies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Nenhuma empresa encontrada</option>
-              )}
-            </select>
+            <select 
+  value={selectedCompanyId} // Importante: mantém o componente "controlado"
+  onChange={(e) => {
+    console.log("ID selecionado:", e.target.value);
+    setSelectedCompanyId(e.target.value);
+  }}
+  required
+>
+  <option value="">Selecione a Empresa</option>
+  {companies.map((company) => (
+    <option key={company.id} value={company.id}>
+      {company.name}
+    </option>
+  ))}
+</select>
           </div>
 
           {/* Motivo do Serviço */}
@@ -131,3 +134,4 @@ const loadCompanies = async () => {
 
 
 export default NewAppointmentModal;
+
