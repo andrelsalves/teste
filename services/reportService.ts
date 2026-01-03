@@ -35,6 +35,30 @@ export const reportService = {
     const pageHeight = doc.internal.pageSize.getHeight();
     const companyName = app.company_name || app.companyName || 'Cliente';
 
+    // --- MARCA D'ÁGUA (ESCUDO) ---
+    try {
+      // Use o caminho exato da sua imagem de escudo
+      const watermarkBase64 = await this.getBase64FromUrl('/escudo-sst.png'); 
+      if (watermarkBase64) {
+        doc.saveGraphicsState();
+        doc.setGState(new (doc as any).GState({ opacity: 0.1 })); // Opacidade baixa (10%)
+        // Centralizando o escudo grande no meio da página
+        doc.addImage(watermarkBase64, 'PNG', pageWidth / 4, pageHeight / 4, pageWidth / 2, pageWidth / 2);
+        doc.restoreGraphicsState();
+      }
+    } catch (e) {
+      console.warn("Escudo não carregado para o PDF");
+    }
+
+    // --- RESTANTE DO CONTEÚDO (CABEÇALHO, TABELAS) ---
+    // O conteúdo desenhado após a marca d'água ficará por cima dela.
+    
+    // ... (insira aqui o código do cabeçalho e autoTable que já criamos)
+
+    doc.save(`Relatorio_SST_${app.company_name?.replace(/\s/g, '_')}.pdf`);
+  }
+};
+
     // --- LOGO NO CABEÇALHO ---
     try {
       const logoBase64 = await this.getBase64FromUrl('/logo-minimal.png'); 
@@ -128,3 +152,4 @@ export const reportService = {
     doc.save(`Relatorio_SST_${companyName.replace(/\s/g, '_')}.pdf`);
   }
 };
+
