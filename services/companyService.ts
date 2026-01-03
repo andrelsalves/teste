@@ -50,4 +50,4 @@ export const companyService = {
     if (error) throw error;
     return data;
   }
-};
+}

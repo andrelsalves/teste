@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true, // Verifique se há vírgula aqui
+    "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
@@ -18,8 +18,8 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["react", "react-dom"] // Verifique as vírgulas acima desta linha também
+    "types": ["react", "react-dom"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/../."],
   "exclude": ["node_modules", "dist"]
 }
