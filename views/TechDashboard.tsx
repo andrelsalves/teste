@@ -95,24 +95,27 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                     </div>
                 ) : (
                     appointments.map(app => (
-                        <div key={app.id} className="group relative overflow-hidden bg-slate-900/50 border border-white/5 rounded-[32px] p-6 transition-all hover:scale-[1.02] hover:border-emerald-500/30">
-                            <div className="flex justify-between items-start mb-6">
-                                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase border ${getStatusStyle(app.status)}`}>
-                                    {!app.technicianId ? 'Oportunidade Aberta' : app.status}
-                                </span>
-                            </div>
-                            <h3 className="text-white font-black text-xl mb-1 uppercase tracking-tight">{app.companyName || 'Empresa Independente'}</h3>
-                            <p className="text-slate-400 text-sm line-clamp-2 italic mb-6">"{app.reason}"</p>
-                            <button
-                                onClick={() => setItemForDetails(app)}
-                                className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500 hover:text-slate-950 text-white font-black text-[10px] uppercase transition-all shadow-lg hover:shadow-emerald-500/10"
-                            >
-                                Gerenciar Visita
-                            </button>
-                        </div>
-                    ))
-                )}
-            </div>
+                        <div className="bg-slate-900/40 border border-white/5 rounded-[24px] p-5 hover:bg-slate-900/60 transition-all group">
+  {/* Status Badge - Diminuído */}
+  <span className="text-[8px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter bg-emerald-500/10 text-emerald-500">
+    {appointment.status}
+  </span>
+
+  {/* Informações Principais - Compactadas */}
+  <div className="mt-3">
+    <h3 className="text-white font-bold text-sm leading-tight group-hover:text-emerald-400 transition-colors">
+      {appointment.company_name}
+    </h3>
+    <p className="text-slate-500 text-[10px] mt-1 italic">
+      "{appointment.reason}"
+    </p>
+  </div>
+
+  {/* Botão Gerenciar - Mais fino e minimalista */}
+  <button className="w-full mt-4 py-2.5 bg-slate-800/50 hover:bg-emerald-500 hover:text-slate-950 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all">
+    Gerenciar Visita
+  </button>
+</div>
 
             {/* Modal de Detalhes Dinâmico */}
             {itemForDetails && (
