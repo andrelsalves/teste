@@ -18,7 +18,6 @@ export const reportService = {
     const pageWidth = doc.internal.pageSize.getWidth();
     
     // --- 1. LOGO NO CABEÇALHO ---
-    // Substituindo o texto SST PRO por uma imagem real
     // Se você tiver a logo em /public/logo.png:
     try {
         const logoBase64 = await this.getBase64FromUrl('/logo-minimal.png'); 
@@ -29,7 +28,41 @@ export const reportService = {
         doc.text('SST PRO', 15, 15);
     }
 
-    // ... (restante do código de cabeçalho e tabela)
+    / --- 2. CABEÇALHO (PAPEL TIMBRADO) ---
+    // Faixa Superior
+    doc.setFillColor(15, 23, 42); // Azul Marinho Profissional
+    doc.rect(0, 0, pageWidth, 35, 'F');
+
+    // Título à Direita
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('RELATÓRIO DE VISITA TÉCNICA', pageWidth - 15, 15, { align: 'right' });
+    doc.setFontSize(8);
+    doc.text(`ID: #${app.id?.substring(0, 8).toUpperCase()}`, pageWidth - 15, 22, { align: 'right' });
+    doc.text(`EMISSÃO: ${new Date().toLocaleDateString('pt-BR')}`, pageWidth - 15, 27, { align: 'right' });
+
+    // --- 3. CONTEÚDO ---
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('1. DADOS DO ATENDIMENTO', 15, 50);
+
+    autoTable(doc, {
+      startY: 55,
+      head: [['ESPECIFICAÇÃO', 'DETALHAMENTO']],
+      body: [
+        ['CLIENTE', companyName.toUpperCase()],
+        ['DOCUMENTO (CNPJ)', app.companyCnpj || 'N/A'],
+        ['DATA E HORÁRIO', `${app.date} às ${app.time}`],
+        ['MOTIVO DA VISITA', app.reason || 'Vistoria Técnica'],
+        ['EXECUTOR', app.technicianName || 'Técnico Responsável'],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold' },
+      styles: { cellPadding: 4, fontSize: 9 },
+      columnStyles: { 0: { cellWidth: 50, fontStyle: 'bold', fillColor: [245, 245, 245] } }
+    });
 
     const finalY = (doc as any).lastAutoTable.finalY;
 
@@ -48,5 +81,16 @@ export const reportService = {
     // doc.addImage(signatureDataUrl, 'PNG', pageWidth - 80, footerY - 20, 60, 20);
 
     doc.save(`Relatorio_${app.company_name}.pdf`);
+
+    
+    // Faixa Final
+    doc.setFillColor(248, 250, 252);
+    doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+    doc.setTextColor(100, 100, 100);
+    doc.text('SST PRO - Gestão Ocupacional Inteligente | Gerado via Plataforma Digital', pageWidth / 2, pageHeight - 7, { align: 'center' });
+
+    doc.save(`Relatorio_SST_${companyName.replace(/\s/g, '_')}.pdf`);
+  }
   }
 };
+
