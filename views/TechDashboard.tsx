@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Icons } from "../components/constants/icons";
-import SignatureCanvas from 'react-signature-canvas';
+import * as SignatureCanvas from 'react-signature-canvas';
 import NewAppointmentModal from '../components/modal/NewAppointmentModal';
 import { reportService } from '../services/reportService';
 
+console.log('SignatureCanvas carregado:', !!SignatureCanvas);
 interface TechDashboardProps {
     user: { id: string; name: string; email?: string; };
     appointments: any[];
