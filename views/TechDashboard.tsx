@@ -82,7 +82,7 @@ const TechDashboard: React.FC<TechDashboardProps> = ({
                                 </span>
                             </div>
 
-                            <h3 className="text-white font-bold text-sm leading-tight truncate" title={app.company_name}>
+                            <h3 className="text-white font-bold text-sm leading-tight truncate mb-4" title={app.company_name}>
                                 {app.company_name}
                             </h3>
                              {/* Texto motivos de visita */}
