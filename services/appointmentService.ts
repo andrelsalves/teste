@@ -29,7 +29,7 @@ export const appointmentService = {
 
         if (error) throw error;
 
-        return (data || []).map(row => ({
+        return (data || []).map((row: { appointment_id: any; company_id: any; company_name: any; company_cnpj: any; technician_id: any; technician_name: any; datetime: string | number | Date; }) => ({
             ...row,
             id: row.appointment_id,
             companyId: row.company_id, // CRITICO: Garante o vínculo da empresa
@@ -53,7 +53,7 @@ export const appointmentService = {
 
         if (error) throw error;
 
-        return (data || []).map(row => ({
+        return (data || []).map((row: { appointment_id: any; company_id: any; company_name: any; company_cnpj: any; technician_id: any; technician_name: any; datetime: string | number | Date; }) => ({
             ...row,
             id: row.appointment_id,
             companyId: row.company_id,
