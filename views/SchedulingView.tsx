@@ -2,10 +2,6 @@ import React, {useState,useMemo, useCallback,useEffect,} from 'react';
 import type { Appointment } from '../types/types';
 import { Icons } from '../components/constants/icons';
 
-/* ===========================
-   Tipos
-=========================== */
-
 type TimeSlot = {
   time: string;
   available: boolean;
@@ -15,16 +11,9 @@ interface SchedulingViewProps {
   existingAppointments: Appointment[];
   onSchedule: (date: string, time: string) => Promise<void>;
 }
-
-/* ===========================
-   Utils (fora do componente)
-=========================== */
-
-// SSR-safe date factory
 function createLocalDate(date: string) {
   return new Date(`${date}T00:00:00-03:00`);
 }
-
 // Geração de horários (única fonte de verdade)
 function generateTimeSlots(
   start = 8,
@@ -41,9 +30,6 @@ function generateTimeSlots(
   return slots;
 }
 
-/* ===========================
-   Component
-=========================== */
 
 const SchedulingView: React.FC<SchedulingViewProps> = ({
   existingAppointments,
@@ -53,9 +39,6 @@ const SchedulingView: React.FC<SchedulingViewProps> = ({
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isScheduling, setIsScheduling] = useState(false);
 
-  /* ===========================
-     Memoized slots
-  =========================== */
 
   const baseSlots = useMemo(() => generateTimeSlots(), []);
 
@@ -72,9 +55,6 @@ const SchedulingView: React.FC<SchedulingViewProps> = ({
     }));
   }, [baseSlots, existingAppointments, selectedDate]);
 
-  /* ===========================
-     Handlers
-  =========================== */
 
   const handleSelectDate = useCallback((date: string) => {
     setSelectedDate(date);
@@ -100,9 +80,6 @@ const SchedulingView: React.FC<SchedulingViewProps> = ({
     }
   }, [selectedDate, selectedTime, onSchedule]);
 
-  /* ===========================
-     Derived state
-  =========================== */
 
   const canConfirm = !!selectedDate && !!selectedTime && !isScheduling;
 
