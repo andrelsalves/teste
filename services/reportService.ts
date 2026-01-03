@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 export const reportService = {
-  // 1. Função auxiliar para converter URL/File em Base64
+  // 1. Converte URL/Caminho em Base64
   async getBase64FromUrl(url: string): Promise<string> {
     try {
       const data = await fetch(url);
@@ -18,7 +18,7 @@ export const reportService = {
     }
   },
 
-  // 2. Função para abrir o WhatsApp
+  // 2. Abre o WhatsApp com mensagem formatada
   openWhatsApp(app: any) {
     if (!app) return;
     const phoneNumber = "55" + (app.clientPhone || "").replace(/\D/g, ''); 
@@ -28,7 +28,7 @@ export const reportService = {
     window.open(url, '_blank');
   },
 
-  // 3. Função para gerar o PDF
+  // 3. Gera o PDF com Marca d'água, Foto e Assinatura
   async generateAppointmentPDF(app: any, photoDataUrl?: string | null, signatureDataUrl?: string | null) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -37,29 +37,19 @@ export const reportService = {
 
     // --- MARCA D'ÁGUA (ESCUDO) ---
     try {
-      // Use o caminho exato da sua imagem de escudo
       const watermarkBase64 = await this.getBase64FromUrl('/escudo-sst.png'); 
       if (watermarkBase64) {
         doc.saveGraphicsState();
-        doc.setGState(new (doc as any).GState({ opacity: 0.1 })); // Opacidade baixa (10%)
-        // Centralizando o escudo grande no meio da página
+        // @ts-ignore - GState existe no jsPDF mas às vezes o TS reclama
+        doc.setGState(new (doc as any).GState({ opacity: 0.1 })); 
         doc.addImage(watermarkBase64, 'PNG', pageWidth / 4, pageHeight / 4, pageWidth / 2, pageWidth / 2);
         doc.restoreGraphicsState();
       }
     } catch (e) {
-      console.warn("Escudo não carregado para o PDF");
+      console.warn("Escudo não aplicado ao fundo");
     }
 
-    // --- RESTANTE DO CONTEÚDO (CABEÇALHO, TABELAS) ---
-    // O conteúdo desenhado após a marca d'água ficará por cima dela.
-    
-    // ... (insira aqui o código do cabeçalho e autoTable que já criamos)
-
-    doc.save(`Relatorio_SST_${app.company_name?.replace(/\s/g, '_')}.pdf`);
-  }
-};
-
-    // --- LOGO NO CABEÇALHO ---
+    // --- LOGO E CABEÇALHO ---
     try {
       const logoBase64 = await this.getBase64FromUrl('/logo-minimal.png'); 
       if (logoBase64) {
@@ -70,7 +60,6 @@ export const reportService = {
       doc.text('SST PRO', 15, 18);
     }
 
-    // --- FAIXA DO CABEÇALHO ---
     doc.setFillColor(15, 23, 42); 
     doc.rect(0, 0, pageWidth, 35, 'F');
 
@@ -111,18 +100,16 @@ export const reportService = {
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text('2. PARECER TÉCNICO', 15, currentY);
-    
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     const description = app.description || 'Nenhuma observação adicional.';
     const splitText = doc.splitTextToSize(description, pageWidth - 30);
     doc.text(splitText, 15, currentY + 8);
-    
     currentY += (splitText.length * 5) + 20;
 
     // --- FOTO ---
     if (photoDataUrl) {
-      if (currentY + 50 > pageHeight - 40) doc.addPage(); 
+      if (currentY + 60 > pageHeight - 40) doc.addPage();
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
       doc.text('3. EVIDÊNCIA FOTOGRÁFICA', 15, currentY);
@@ -147,9 +134,8 @@ export const reportService = {
     doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(7);
-    doc.text('SST PRO - Gestão Ocupacional Inteligente | Gerado via Plataforma Digital', pageWidth / 2, pageHeight - 7, { align: 'center' });
+    doc.text('SST PRO - Gestão Ocupacional Inteligente', pageWidth / 2, pageHeight - 7, { align: 'center' });
 
     doc.save(`Relatorio_SST_${companyName.replace(/\s/g, '_')}.pdf`);
   }
 };
-
