@@ -16,6 +16,16 @@ export const reportService = {
       console.error("Erro ao carregar imagem para Base64", e);
       return "";
     }
+
+    openWhatsApp(app: any) {
+    const phoneNumber = "55" + app.clientPhone?.replace(/\D/g, ''); // Garante formato 5511999999999
+    const message = `Olá! Segue o Relatório de Visita Técnica da empresa *${app.company_name}* referente ao atendimento de *${app.reason}*. %0A%0A_Enviado via SST PRO_`;
+    
+    // Abre o link do WhatsApp
+    const url = `https://wa.me/${phoneNumber}?text=${message}`;
+    window.open(url, '_blank');
+  }
+    
   },
 
   async generateAppointmentPDF(app: any, photoDataUrl?: string | null, signatureDataUrl?: string | null) {
@@ -120,3 +130,4 @@ export const reportService = {
     doc.save(`Relatorio_SST_${companyName.replace(/\s/g, '_')}.pdf`);
   }
 };
+
