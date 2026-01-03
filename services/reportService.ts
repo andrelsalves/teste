@@ -10,16 +10,14 @@ export const reportService = {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     
-    // Tratamento de strings para evitar erros
     const companyName = app.companyName || 'Empresa não informada';
-    const reportDate = app.date || new Date().toLocaleDateString('pt-BR');
 
-    // --- 1. MARCA D'ÁGUA CENTRALIZADA ---
-    // Usamos um tom cinza muito claro (opacidade simulada)
+    // --- 1. PAPEL TIMBRADO (MARCA D'ÁGUA) ---
+    // Apenas o texto limpo, sem círculos, no fundo
     doc.saveGraphicsState();
-    doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
+    doc.setGState(new (doc as any).GState({ opacity: 0.03 }));
     doc.setFontSize(60);
-    doc.setTextColor(150, 150, 150);
+    doc.setTextColor(15, 23, 42);
     doc.setFont('helvetica', 'bold');
     doc.text('SST PRO', pageWidth / 2, pageHeight / 2, {
       align: 'center',
@@ -27,83 +25,72 @@ export const reportService = {
     });
     doc.restoreGraphicsState();
 
-    // --- 2. CABEÇALHO (PAPEL TIMBRADO) ---
-    // Faixa Superior
-    doc.setFillColor(15, 23, 42); // Azul Marinho Profissional
-    doc.rect(0, 0, pageWidth, 35, 'F');
+    // --- 2. CABEÇALHO ---
+    // Faixa Superior Minimalista
+    doc.setFillColor(15, 23, 42); 
+    doc.rect(0, 0, pageWidth, 25, 'F');
 
-    // LOGO SIMULADA (Círculo + Texto)
-    doc.setDrawColor(34, 197, 94); // Verde Esmeralda do Sistema
-    doc.setLineWidth(1);
-    doc.circle(25, 17, 8, 'D'); 
+    // Logo em Texto (Substituindo o círculo verde)
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.text('SST', 38, 18);
-    doc.setTextColor(34, 197, 94);
-    doc.text('PRO', 52, 18);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SST', 15, 16);
+    doc.setTextColor(34, 197, 94); // Verde Esmeralda apenas no PRO
+    doc.text('PRO', 28, 16);
 
     // Título à Direita
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('RELATÓRIO DE VISITA TÉCNICA', pageWidth - 15, 15, { align: 'right' });
     doc.setFontSize(8);
-    doc.text(`ID: #${app.id?.substring(0, 8).toUpperCase()}`, pageWidth - 15, 22, { align: 'right' });
-    doc.text(`EMISSÃO: ${new Date().toLocaleDateString('pt-BR')}`, pageWidth - 15, 27, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text('RELATÓRIO TÉCNICO DE VISITA', pageWidth - 15, 12, { align: 'right' });
+    doc.text(`ID: #${app.id?.substring(0, 8).toUpperCase()}`, pageWidth - 15, 18, { align: 'right' });
 
-    // --- 3. CONTEÚDO ---
+    // --- 3. TABELA DE DADOS ---
     doc.setTextColor(15, 23, 42);
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('1. DADOS DO ATENDIMENTO', 15, 50);
+    doc.text('1. INFORMAÇÕES GERAIS', 15, 40);
 
     autoTable(doc, {
-      startY: 55,
-      head: [['ESPECIFICAÇÃO', 'DETALHAMENTO']],
+      startY: 45,
+      head: [['CAMPO', 'INFORMAÇÃO']],
       body: [
         ['CLIENTE', companyName.toUpperCase()],
-        ['DOCUMENTO (CNPJ)', app.companyCnpj || 'N/A'],
-        ['DATA E HORÁRIO', `${app.date} às ${app.time}`],
-        ['MOTIVO DA VISITA', app.reason || 'Vistoria Técnica'],
-        ['EXECUTOR', app.technicianName || 'Técnico Responsável'],
+        ['CNPJ', app.companyCnpj || 'N/A'],
+        ['DATA', app.date],
+        ['MOTIVO', app.reason || 'Vistoria'],
+        ['TÉCNICO', app.technicianName || 'Responsável'],
       ],
-      theme: 'grid',
-      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold' },
-      styles: { cellPadding: 4, fontSize: 9 },
-      columnStyles: { 0: { cellWidth: 50, fontStyle: 'bold', fillColor: [245, 245, 245] } }
+      theme: 'striped',
+      headStyles: { fillColor: [15, 23, 42] },
+      styles: { fontSize: 8 },
     });
 
     const finalY = (doc as any).lastAutoTable.finalY;
 
     // --- 4. PARECER TÉCNICO ---
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('2. PARECER TÉCNICO', 15, finalY + 15);
 
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    const description = app.description || 'Sem observações adicionais gravadas.';
+    const description = app.description || 'Nenhuma observação registrada.';
     const splitText = doc.splitTextToSize(description, pageWidth - 30);
-    doc.text(splitText, 15, finalY + 23);
+    doc.text(splitText, 15, finalY + 22);
 
-    // --- 5. RODAPÉ COM ASSINATURAS ---
-    const footerY = pageHeight - 50;
+    // --- 5. ASSINATURAS (ESTILO PROFISSIONAL) ---
+    const footerY = pageHeight - 40;
     
-    // Linhas de Assinatura
-    doc.setDrawColor(180, 180, 180);
-    doc.line(20, footerY, 90, footerY); // Técnico
-    doc.line(pageWidth - 90, footerY, pageWidth - 20, footerY); // Cliente
+    // Linha do Cliente (onde vai a imagem da assinatura se existir)
+    doc.setDrawColor(200, 200, 200);
+    doc.line(pageWidth - 85, footerY, pageWidth - 15, footerY);
+    doc.text('Assinatura do Cliente', pageWidth - 50, footerY + 5, { align: 'center' });
 
-    doc.setFontSize(8);
-    doc.text('Assinatura do Técnico', 55, footerY + 5, { align: 'center' });
-    doc.text('Assinatura do Cliente', pageWidth - 55, footerY + 5, { align: 'center' });
+    // Linha do Técnico
+    doc.line(15, footerY, 85, footerY);
+    doc.text('Assinatura do Técnico', 50, footerY + 5, { align: 'center' });
 
-    // Faixa Final
-    doc.setFillColor(248, 250, 252);
-    doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
-    doc.setTextColor(100, 100, 100);
-    doc.text('SST PRO - Gestão Ocupacional Inteligente | Gerado via Plataforma Digital', pageWidth / 2, pageHeight - 7, { align: 'center' });
-
-    doc.save(`Relatorio_SST_${companyName.replace(/\s/g, '_')}.pdf`);
+    doc.save(`Relatorio_${companyName.replace(/\s/g, '_')}.pdf`);
   }
 };
