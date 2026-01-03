@@ -19,8 +19,8 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSu
     const [formData, setFormData] = useState({
         companyId: '',
         reason: '',
-        date: '', // Separado para o input type="date"
-        time: '', // Separado para o select de 40min
+        date: '',
+        time: '',
     });
 
     // 2. Gere as opções de horário
@@ -161,3 +161,4 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ onClose, onSu
 };
 
 export default NewAppointmentModal;
+
