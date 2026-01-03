@@ -78,24 +78,18 @@ const loadCompanies = async () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Seleção de Empresa */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Unidade / Cliente</label>
-            <select 
-  value={selectedCompanyId} // Importante: mantém o componente "controlado"
-  onChange={(e) => {
-    console.log("ID selecionado:", e.target.value);
-    setSelectedCompanyId(e.target.value);
-  }}
-  required
->
-  <option value="">Selecione a Empresa</option>
-  {companies.map((company) => (
-    <option key={company.id} value={company.id}>
-      {company.name}
-    </option>
-  ))}
-</select>
-          </div>
+          <div className="flex flex-col gap-2 mb-4"> 
+  <label className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+    Unidade / Cliente
+  </label>
+  <select 
+    className="bg-transparent border border-slate-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none"
+    style={{ backgroundColor: 'transparent' }} // Garante a remoção do fundo
+  >
+    <option className="bg-slate-900" value="">Selecione a Empresa</option>
+    {/* ... mapeamento das empresas */}
+  </select>
+</div>
 
           {/* Motivo do Serviço */}
           <div className="space-y-2">
@@ -134,4 +128,5 @@ const loadCompanies = async () => {
 
 
 export default NewAppointmentModal;
+
 
