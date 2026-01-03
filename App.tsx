@@ -5,11 +5,9 @@ import HistoryDashboardView from './views/HistoryDashboardView';
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
       <AppointmentProvider>
         <HistoryDashboardView />
       </AppointmentProvider>
-    </AuthProvider>
   );
 };
 
