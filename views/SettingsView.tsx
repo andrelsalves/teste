@@ -1,160 +1,147 @@
+import React, { useState, useMemo } from 'react';
+import { Appointment, User } from '../types/types';
+import { Icons as LucideIcons } from '../components/constants/icons';
 
-import React, { useState } from 'react';
-
-interface SettingsViewProps {
-  settings: {
-    autoApprove: boolean;
-    emailNotifications: boolean;
-    emailReminder24h: boolean;
-    smsNotifications: boolean;
-    allowSupportChat: boolean;
-    dataSharing: boolean;
-  };
-  onUpdateSettings: (newSettings: any) => void;
-  onNavigate: (view: string) => void;
-}
-
-const SettingsView: React.FC<SettingsViewProps> = ({ settings, onUpdateSettings, onNavigate }) => {
-  // Local temporary state for editing before saving
-  const [localSettings, setLocalSettings] = useState(settings);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const toggle = (key: keyof typeof localSettings) => {
-    setLocalSettings(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleSave = () => {
-    onUpdateSettings(localSettings);
-    setShowSuccess(true);
-    
-    // Redirect to dashboard after a short delay to show success feedback
-    setTimeout(() => {
-      setShowSuccess(false);
-      onNavigate('DASHBOARD');
-    }, 1500);
-  };
-
-  const sections = [
-    {
-      title: 'Notificações',
-      desc: 'Configure como o sistema avisa técnicos e empresas.',
-      items: [
-        { 
-          key: 'emailNotifications', 
-          label: 'Notificações por Email', 
-          desc: 'Habilita o envio de comunicações oficiais por correio eletrônico.' 
-        },
-        { 
-          key: 'emailReminder24h', 
-          label: 'Lembrete de 24 horas', 
-          desc: 'Enviar um email de lembrete 24 horas antes da visita técnica.',
-          parent: 'emailNotifications' 
-        },
-        { 
-          key: 'smsNotifications', 
-          label: 'Alertas SMS (Beta)', 
-          desc: 'Envio de lembretes via mensagem de texto para o celular do técnico.' 
-        },
-      ]
-    },
-    {
-      title: 'Fluxo de Trabalho',
-      desc: 'Regras de negócio para o processo de agendamento.',
-      items: [
-        { key: 'allowSupportChat', label: 'Chat de Suporte IA', desc: 'Habilita o assistente inteligente para dúvidas sobre NRs.' },
-      ]
-    },
-    {
-      title: 'Segurança e Privacidade',
-      desc: 'Gerencie permissões de dados e acessos externos.',
-      items: [
-        { key: 'dataSharing', label: 'Compartilhamento de Métricas', desc: 'Enviar relatórios anônimos de conformidade para rede parceira.' },
-      ]
+// Gera slots de 40 min: 08:00, 08:40, 09:20...
+export const generateTimeSlots = () => {
+    const slots = [];
+    let currentMinutes = 480; // 08:00
+    const endMinutes = 1080;  // 18:00
+    while (currentMinutes <= endMinutes) {
+        const hours = Math.floor(currentMinutes / 60);
+        const mins = currentMinutes % 60;
+        slots.push(`${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`);
+        currentMinutes += 40; 
     }
-  ];
-
-  return (
-    <div className="max-w-4xl mx-auto w-full space-y-10 animate-fadeIn pb-12 relative">
-      {/* Local Success Notification */}
-      {showSuccess && (
-        <div className="fixed top-20 right-4 left-4 md:left-auto md:w-80 bg-emerald-600 text-white p-4 rounded-xl shadow-2xl z-[100] animate-bounce flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-          <p className="font-bold text-sm">Configurações salvas! Redirecionando...</p>
-        </div>
-      )}
-
-      <div>
-        <h2 className="text-3xl font-bold">Configurações de Permissões</h2>
-        <p className="text-slate-400 mt-1">Personalize o comportamento do sistema para toda a organização.</p>
-      </div>
-
-      <div className="space-y-12">
-        {sections.map((section, idx) => (
-          <section key={idx} className="space-y-4">
-            <div className="border-l-4 border-emerald-500 pl-4">
-              <h3 className="text-xl font-bold">{section.title}</h3>
-              <p className="text-sm text-slate-500">{section.desc}</p>
-            </div>
-
-            <div className="grid gap-4 mt-6">
-              {section.items.map(item => {
-                const isSubOption = 'parent' in item;
-                const parentEnabled = isSubOption ? localSettings[item.parent as keyof typeof localSettings] : true;
-
-                if (isSubOption && !parentEnabled) return null;
-
-                const isActive = localSettings[item.key as keyof typeof localSettings];
-
-                return (
-                  <div 
-                    key={item.key} 
-                    onClick={() => toggle(item.key as keyof typeof localSettings)}
-                    className={`flex items-center justify-between p-6 bg-slate-800 rounded-3xl border border-slate-700 hover:border-slate-600 transition-all cursor-pointer group shadow-lg
-                      ${isSubOption ? 'ml-8 bg-slate-800/50 scale-[0.98]' : ''}
-                    `}
-                  >
-                    <div className="max-w-md">
-                      <div className="flex items-center gap-2">
-                        {isSubOption && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M9 18l6-6-6-6"/></svg>
-                        )}
-                        <p className="font-bold text-white group-hover:text-emerald-500 transition-colors">{item.label}</p>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-1">{item.desc}</p>
-                    </div>
-                    
-                    <div className={`w-14 h-8 rounded-full transition-all relative ${isActive ? 'bg-emerald-500' : 'bg-slate-700'}`}>
-                      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all shadow-md ${isActive ? 'left-7' : 'left-1'}`} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
-        <section className="p-6 bg-amber-500/10 border border-amber-500/30 rounded-3xl">
-          <p className="text-sm text-amber-500 font-semibold">
-            Nota: Todos os novos agendamentos agora requerem confirmação manual do técnico por padrão para garantir a revisão da disponibilidade.
-          </p>
-        </section>
-      </div>
-
-      <div className="pt-8 border-t border-slate-700 flex justify-end gap-4">
-        <button 
-          onClick={() => setLocalSettings(settings)}
-          className="px-8 py-3 bg-slate-800 hover:bg-slate-700 rounded-2xl font-bold transition-all"
-        >
-          Descartar
-        </button>
-        <button 
-          onClick={handleSave}
-          className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-900 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
-        >
-          Salvar e Voltar
-        </button>
-      </div>
-    </div>
-  );
+    return slots;
 };
 
-export default SettingsView;
+const CalendarGrid: React.FC<{
+    selectedDate: string;
+    onSelect: (date: string) => void;
+    appointments?: Appointment[];
+}> = ({ selectedDate, onSelect, appointments }) => {
+    const now = new Date();
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => i);
+
+    return (
+        <div className="grid grid-cols-7 gap-2">
+            {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => (
+                <div key={d} className="text-[10px] font-black text-slate-600 uppercase text-center mb-2">{d}</div>
+            ))}
+            {blanks.map(b => <div key={`b-${b}`} />)}
+            {days.map(day => {
+                const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isSelected = selectedDate === dateStr;
+                const hasApp = (appointments || []).some(app => {
+                    const appDate = app.datetime ? app.datetime.split('T')[0] : app.date;
+                    return appDate === dateStr;
+                });
+
+                return (
+                    <button
+                        key={day}
+                        onClick={() => onSelect(dateStr)}
+                        type="button"
+                        className={`aspect-square rounded-xl text-sm font-bold transition-all flex items-center justify-center relative
+                            ${isSelected ? 'bg-emerald-500 text-slate-950 shadow-lg scale-110 z-10' 
+                            : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-white'}`}
+                    >
+                        {day}
+                        {hasApp && <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-orange-500 rounded-full" />}
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
+
+const SchedulingView: React.FC<any> = ({ user, onSchedule, appointments }) => {
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+    const [reason, setReason] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Filtra horários que já estão em uso no dia selecionado
+    const availableSlots = useMemo(() => {
+        const all = generateTimeSlots();
+        if (!date) return all.map(s => ({ time: s, available: true }));
+        
+        const occupied = (appointments || [])
+            .filter(a => (a.datetime?.split('T')[0] || a.date) === date)
+            .map(a => a.datetime?.split('T')[1].substring(0, 5) || a.time);
+
+        return all.map(s => ({ time: s, available: !occupied.includes(s) }));
+    }, [date, appointments]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const datetime = `${date}T${time}:00`;
+            await onSchedule({ datetime, reason, description: `Solicitação de ${reason}`, technicianId: undefined });
+            setTime(''); setReason('');
+        } catch (error) { console.error(error); } 
+        finally { setIsSubmitting(false); }
+    };
+
+    return (
+        <div className="max-w-6xl mx-auto animate-fadeIn pb-20 px-4">
+            <header className="mb-10 text-center lg:text-left">
+                <h2 className="text-4xl font-black text-white tracking-tighter">
+                    Solicitar <span className="text-emerald-500 italic">Consultoria Especializada</span>
+                </h2>
+                <p className="text-slate-400 mt-2 font-medium">
+                    Unidade: <span className="text-white font-bold underline decoration-emerald-500/50">{user?.companyName || 'Empresa'}</span>
+                </p>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-7 bg-[#111625] p-8 rounded-[40px] border border-white/5 backdrop-blur-md shadow-2xl">
+                    <CalendarGrid selectedDate={date} onSelect={(d) => { setDate(d); setTime(''); }} appointments={appointments} />
+                </div>
+
+                <div className={`lg:col-span-5 space-y-6 transition-all duration-700 ${date ? 'opacity-100 translate-x-0' : 'opacity-20 pointer-events-none translate-x-4'}`}>
+                    <form onSubmit={handleSubmit} className="bg-[#0f172a] p-8 rounded-[40px] border border-emerald-500/10 shadow-2xl space-y-6">
+                        <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl flex items-center justify-between">
+                            <div className="text-white font-bold">
+                                {date ? new Date(date + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) : 'Selecione no calendário'}
+                            </div>
+                            <LucideIcons.Calendar className="text-emerald-500 w-6 h-6" />
+                        </div>
+
+                        <select value={time} onChange={(e) => setTime(e.target.value)} required className="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-emerald-500/50 appearance-none">
+                            <option value="">Selecione o horário...</option>
+                            {availableSlots.map(s => (
+                                <option key={s.time} value={s.time} disabled={!s.available} className={s.available ? "" : "text-slate-600"}>
+                                    {s.time} {!s.available ? '(Ocupado)' : ''}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select value={reason} onChange={(e) => setReason(e.target.value)} required className="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-emerald-500/50 appearance-none">
+                            <option value="" disabled>Qual a consultoria?</option>
+                            <optgroup label="Segurança do Trabalho" className="bg-slate-800 text-emerald-500">
+                                <option value="PGR" className="text-white">Renovação de PGR/PCMSO</option>
+                                <option value="NR" className="text-white">Treinamento Normativo (NRs)</option>
+                            </optgroup>
+                            <optgroup label="Engenharia" className="bg-slate-800 text-emerald-500">
+                                <option value="Bombeiros" className="text-white">Projeto Bombeiros (AVCB)</option>
+                                <option value="Estrutural" className="text-white">Vistoria de Estrutura</option>
+                            </optgroup>
+                        </select>
+
+                        <button disabled={isSubmitting || !date || !time || !reason} className="w-full bg-emerald-500 text-slate-950 font-black py-5 rounded-2xl uppercase hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 active:scale-95">
+                            {isSubmitting ? 'Enviando...' : 'Finalizar Agendamento'}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default SchedulingView;
