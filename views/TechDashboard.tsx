@@ -5,8 +5,8 @@ import { reportService } from '../services/report/reportService';
 import { useAuth } from '../hooks/useAuth';
 import { useAppointments } from '../hooks/useAppointments';
 import { AppointmentStatus } from '../types/types';
+import SignatureCanvas from 'react-signature-canvas';
 
-const SignatureCanvas = lazy(() => import('react-signature-canvas'));
 
 const TechDashboard: React.FC = () => {
     const { user } = useAuth();
@@ -205,14 +205,6 @@ const TechDashboard: React.FC = () => {
                                         <button onClick={clearSignature} className="text-[9px] text-rose-500 font-black uppercase">Limpar</button>
                                     </div>
                                     <div className="bg-white rounded-2xl h-40 overflow-hidden">
-                                        <Suspense fallback={<div className="p-4 text-white italic">Carregando canvas...</div>}>
-                                            <SignatureCanvas
-                                                ref={sigCanvas}
-                                                onEnd={() => setHasSignature(true)}
-                                                penColor="black"
-                                                canvasProps={{ className: "w-full h-full" }}
-                                            />
-                                        </Suspense>
                                     </div>
                                 </div>
                             </div>
