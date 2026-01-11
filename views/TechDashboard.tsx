@@ -192,7 +192,7 @@ const TechDashboard: React.FC = () => {
                                             <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" />
                                         ) : (
                                             <div className="flex flex-col items-center justify-center h-full text-slate-500">
-                                                <Icons.Camera className="w-6 h-6 mb-1" />
+                                                 < // Icons.Camera className="w-6 h-6 mb-1" />
                                                 <span className="text-[10px] uppercase font-bold">Anexar Foto</span>
                                             </div>
                                         )}
