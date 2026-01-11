@@ -1,4 +1,5 @@
 import React from 'react';
+import { XCircle } from 'lucide-react';
 
 export const COLORS = {
     primary: '#10b981', // Emerald 500
