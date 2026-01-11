@@ -234,13 +234,13 @@ const TechDashboard: React.FC = () => {
                 <Icons.Plus className="w-7 h-7" />
             </button>
 
-            {isNewModalOpen && (
+            {/*isNewModalOpen && (
                 <NewAppointmentModal
                     technicianId={user.id}
                     onClose={() => setIsNewModalOpen(false)}
                     onSuccess={() => { loadAppointments(); setIsNewModalOpen(false); }}
                 />
-            )}
+            )*/}
         </div>
     );
 };
