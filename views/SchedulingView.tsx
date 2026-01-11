@@ -4,20 +4,13 @@ import { Icons as LucideIcons } from '../components/constants/icons';
 
 // --- LOGICA DE HORÁRIOS ---
 export const generateTimeSlots = () => {
-    const slots = [];
-    let currentMinutes = 480; // 08:00
-    const endMinutes = 1080;  // 18:00
-
-    while (currentMinutes <= endMinutes) {
-        const hours = Math.floor(currentMinutes / 60);
-        const mins = currentMinutes % 60;
-        slots.push(
-            `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
-        );
-        currentMinutes += 40; // Intervalo de 40 minutos
-    }
-    return slots;
+  const slots = [];
+  for (let h = 8; h <= 17; h++) {
+    slots.push(`${String(h).padStart(2, '0')}:00`);
+  }
+  return slots;
 };
+
 
 // --- COMPONENTE DE CALENDÁRIO ---
 const CalendarGrid: React.FC<{
