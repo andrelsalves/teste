@@ -90,7 +90,7 @@ const TechDashboard: React.FC = () => {
                         Painel de <span className="text-emerald-500">Serviços</span>
                     </h2>
                     <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">
-                        {user.name} • {appointments.length} Atendimentos Encontrados
+                        {user.name} • {appointments?.length ?? 0} Atendimentos Encontrados
                     </p>
                 </div>
                 <div className="flex items-center gap-3 bg-slate-900/50 px-4 py-2 rounded-2xl border border-white/5">
@@ -168,7 +168,7 @@ const TechDashboard: React.FC = () => {
                                 <div className="bg-slate-800/30 p-3 rounded-2xl border border-white/5">
                                     <p className="text-[8px] text-slate-500 uppercase font-black mb-1">Data/Hora</p>
                                     <p className="text-white text-xs font-bold">
-                                        {new Date(itemForDetails.datetime).toLocaleString('pt-BR')}
+                                        {itemForDetails.datetime ? new Date(itemForDetails.datetime).toLocaleString('pt-BR') : '—'}
                                     </p>
                                 </div>
                             </div>
@@ -205,7 +205,7 @@ const TechDashboard: React.FC = () => {
                                         <button onClick={clearSignature} className="text-[9px] text-rose-500 font-black uppercase">Limpar</button>
                                     </div>
                                     <div className="bg-white rounded-2xl h-40 overflow-hidden">
-                                        <Suspense fallback={<div className="p-4 text-black italic">Carregando canvas...</div>}>
+                                        <Suspense fallback={<div className="p-4 text-white italic">Carregando canvas...</div>}>
                                             <SignatureCanvas
                                                 ref={sigCanvas}
                                                 onEnd={() => setHasSignature(true)}
